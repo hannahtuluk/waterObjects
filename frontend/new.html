@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Water_objects</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <link href="newstyle.css" rel="stylesheet">
+</head>
+<body>
+<div class="parent">
+    <form action class = "main_information" id="main_information">
+        <div class="form-inner">
+            <h3>Information</h3>
+            <label for="name">Name</label><input type="text" id="name" required>
+            <label for="latitude">Latitude</label><input type="text" id="latitude" required>
+            <label for="longitude">Longtitude</label><input type="text" id="longitude" required>
+            <label for="type" >Type</label>
+            <select id="type" form="main_information">
+                <option>Річка</option>
+                <option>Озеро</option>
+                <option>Водосховище</option>
+                <option>Море</option>
+                <option>Затока</option>
+                <option>Канал</option>
+            </select>
+            <label for="square">Square</label><input type="text" id="square">
+            <label for="bacterias">Bacteria</label>
+            <select  id="bacterias" form="main_information" onclick="addBacterias(this)">
+                <option disabled selected >Виберіть наявні бактерії</option>
+                <option value="micrococcus_candicans">Micrococcus Candicans</option>
+                <option value="sarcina_litea">Sarcina Litea</option>
+                <option value="pseudomonas_fluorescens">Pseudomonas Fluorescens</option>
+                <option value="proteus">Proteus</option>
+                <option value="leptospira">Leptospira</option>
+                <option value="clostridium">Clostridium</option>
+            </select>
+            <label for="building_name">Building name</label><input type="text" id="building_name">
+            <label for="building_type">Building type</label><input type="text" id="building_type">
+            <input type="submit" value="Apply" onclick="axiosPostRiver()">
+        </div>
+    </form>
+   
+</div>
+
+  <script>
+        let bacterias = {
+            "micrococcus_candicans": false,
+            "sarcina_litea":  false, 
+            "pseudomonas_fluorescens": false, 
+            "proteus": false, 
+            "leptospira": false,
+            "clostridium": false
+        };
+
+        function addBacterias(select) {
+            let bacteria = document.getElementById("bacterias").value;
+            if(bacterias[bacteria]){
+                select.options[select.selectedIndex].style.color = 'rgba(110,110,255,0.8)';
+                bacterias[bacteria] = false;
+            } else if(!bacterias[bacteria] && select.selectedIndex){                
+                select.options[select.selectedIndex].style.color = 'blue';
+                bacterias[bacteria] = true;
+            }     
+        }
+
+        async function axiosPostRiver() {
+            await axios.post('http://127.0.0.1:3333/river', {
+                "name": document.getElementById("name").value,
+                "latitude": document.getElementById("latitude").value,
+                "longitude": document.getElementById("longitude").value,
+                "type":  document.getElementById("type").value,
+                "square": document.getElementById("square").value,
+                "buildings": [
+                    {
+                    name: document.getElementById("building_name").value, 
+                    type: document.getElementById("building_type").value
+                    },
+                ],
+                "bacterias": bacterias
+            })
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        }
+    </script>
+
+</body>
+</html>
